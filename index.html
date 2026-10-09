@@ -1,0 +1,31 @@
+---
+layout: default
+---
+<main class="wrap">
+  <section class="hero">
+    <p class="kicker">Diario di viaggio</p>
+    <h1>{{ site.title }}</h1>
+    <p class="lead">{{ site.description }}</p>
+  </section>
+
+  {% if site.posts.size > 0 %}
+  <ol class="posts">
+    {% for post in site.posts %}
+    <li class="card">
+      <a href="{{ post.url | relative_url }}">
+        {% if post.cover and post.cover != '' %}
+        <img src="{{ post.cover | relative_url }}" alt="" loading="lazy">
+        {% endif %}
+        <div class="card-text">
+          <p class="meta">{{ post.date | date: '%d/%m/%Y' }}{% if post.luogo and post.luogo != '' %} · {{ post.luogo }}{% endif %}</p>
+          <h2>{{ post.title }}</h2>
+          {% if post.subtitle and post.subtitle != '' %}<p>{{ post.subtitle }}</p>{% endif %}
+        </div>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="vuoto">I primi racconti arrivano presto.</p>
+  {% endif %}
+</main>

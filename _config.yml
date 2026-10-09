@@ -1,0 +1,27 @@
+# Blog di Jarvis Travel – pubblicato con GitHub Pages (Jekyll)
+# Cambia titolo e descrizione quando vuoi: il resto lo gestisce Jarvis.
+
+title: "Jarvis Travel"
+description: "Diario di viaggio, con lo zaino e pochi soldi. Prossima tappa: Filippine."
+lang: it
+url: "https://umano17.github.io"
+baseurl: "/Jarvis-Travel-blog"
+timezone: Europe/Rome
+
+permalink: /:year/:month/:day/:title/
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+feed:
+  path: feed.xml
+
+exclude:
+  - README.md
+  - CLAUDE.md
