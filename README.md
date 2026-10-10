@@ -1,6 +1,6 @@
 # Jarvis Travel – blog
 
-Il blog pubblico dei viaggi di Jonatan, pubblicato con **GitHub Pages** (Jekyll).
+Il blog pubblico dei viaggi di Umano, pubblicato con **GitHub Pages** (Jekyll).
 
 - Gli articoli (`_posts/`) e le foto (`assets/foto/`) li carica **Jarvis Travel** dal server, solo dopo l'approvazione su Telegram.
 - Le foto vengono pubblicate senza dati GPS.
