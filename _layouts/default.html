@@ -9,17 +9,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  {% if page.mappa %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  {% endif %}
 </head>
 <body>
   <header class="site-head">
     <div class="wrap site-head-inner">
       <a class="brand" href="{{ '/' | relative_url }}">{{ site.title }}</a>
-      <nav><a href="{{ '/feed.xml' | relative_url }}">RSS</a></nav>
+      <nav>
+        <a href="{{ '/' | relative_url }}">Mappa</a>
+        {% assign chi = site.pages | where: "name", "chi-sono.md" | first %}
+        {% if chi %}<a href="{{ chi.url | relative_url }}">Chi è Umano</a>{% endif %}
+        <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      </nav>
     </div>
   </header>
   {{ content }}
   <footer class="site-foot">
-    <div class="wrap">© {{ 'now' | date: '%Y' }} {{ site.title }} · scritto in viaggio</div>
+    <div class="wrap">© {{ 'now' | date: '%Y' }} {{ site.author }} · {{ site.title }} · scritto in viaggio</div>
   </footer>
 </body>
 </html>

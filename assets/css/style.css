@@ -10,6 +10,13 @@
   --titoli: "Fraunces", Georgia, serif;
   --testo: "Literata", Georgia, serif;
   --ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* colori delle esperienze sulla mappa */
+  --e-natura: #2f8f5b;
+  --e-cibo: #d9822b;
+  --e-spostamenti: #3b6fb6;
+  --e-incontri: #b5487a;
+  --e-imprevisti: #c8402e;
+  --e-viaggio: #6b6258;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -40,7 +47,9 @@ a { color: var(--mare); text-underline-offset: 3px; }
 .site-head { border-bottom: 1px solid var(--bordo); }
 .site-head-inner { display: flex; justify-content: space-between; align-items: center; height: 56px; }
 .brand { font: 700 1.15rem var(--titoli); color: var(--inchiostro); text-decoration: none; letter-spacing: -.01em; }
+.site-head nav { display: flex; gap: 1rem; }
 .site-head nav a { font: 500 .85rem var(--ui); color: var(--inchiostro-2); text-decoration: none; }
+.site-head nav a:hover { color: var(--mare); }
 
 /* home */
 .hero { padding: 3.5rem 0 2rem; }
@@ -62,6 +71,21 @@ a { color: var(--mare); text-underline-offset: 3px; }
 .card a:hover h2 { color: var(--mare); }
 .card p { margin: 0; color: var(--inchiostro-2); }
 .card .meta { color: var(--tramonto); }
+
+/* diario-mappa */
+.mappa-sezione { max-width: 1100px; margin: 0 auto 2.5rem; padding: 0 16px; }
+.mappa { height: min(62vh, 540px); border-radius: 6px; border: 1px solid var(--bordo); background: var(--carta-2); z-index: 0; }
+.legenda { list-style: none; padding: 0; margin: .8rem 0 0; display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; font: 500 .8rem var(--ui); color: var(--inchiostro-2); }
+.legenda span { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; background: var(--c); margin-right: .4rem; vertical-align: -1px; box-shadow: 0 0 0 2px #fff; }
+.leaflet-popup-content { margin: 0; width: 220px !important; }
+.leaflet-popup-content-wrapper { border-radius: 6px; overflow: hidden; padding: 0; }
+.pin { display: block; color: #1f1b16; text-decoration: none; font-family: var(--ui); }
+.pin img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.pin-meta { display: block; padding: .6rem .8rem 0; font: 600 .68rem var(--ui); letter-spacing: .06em; text-transform: uppercase; color: #c8552e; }
+.pin strong { display: block; padding: .2rem .8rem .8rem; font: 700 1rem/1.25 var(--titoli); }
+.sezione { font: 700 1.3rem var(--titoli); margin: 0 0 1rem; }
+.sulla-mappa { font: 500 .9rem var(--ui); margin: 2rem 0 0; }
+.sulla-mappa a { text-decoration: none; }
 
 /* articolo */
 .post-head { padding: 3rem 0 1.5rem; }

@@ -5,7 +5,7 @@ layout: default
   <article class="post">
     <header class="post-head">
       <p class="meta">
-        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%d/%m/%Y' }}</time>
+        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%d/%m/%Y' }}</time> · di {{ page.author | default: site.author }}
         {% if page.luogo and page.luogo != '' %} · {{ page.luogo }}{% endif %}
       </p>
       <h1>{{ page.title }}</h1>
@@ -18,6 +18,10 @@ layout: default
     <p class="tags">{% for t in page.tags %}<span>#{{ t }}</span>{% endfor %}</p>
     {% endif %}
   </article>
+
+  {% if page.lat %}
+  <p class="sulla-mappa"><a href="{{ '/' | relative_url }}#mappa">📍 Vedi sulla mappa</a></p>
+  {% endif %}
 
   <nav class="post-nav">
     {% if page.previous %}<a href="{{ page.previous.url | relative_url }}">← {{ page.previous.title }}</a>{% else %}<span></span>{% endif %}

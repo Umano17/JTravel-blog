@@ -1,14 +1,30 @@
 ---
 layout: default
+mappa: true
 ---
 <main class="wrap">
   <section class="hero">
-    <p class="kicker">Diario di viaggio</p>
+    <p class="kicker">Diario di viaggio di {{ site.author }}</p>
     <h1>{{ site.title }}</h1>
     <p class="lead">{{ site.description }}</p>
   </section>
+</main>
 
+<section class="mappa-sezione" id="mappa" aria-label="Mappa dei racconti">
+  <div id="mappa-diario" class="mappa"></div>
+  <ul class="legenda">
+    <li><span style="--c: var(--e-natura)"></span>Natura</li>
+    <li><span style="--c: var(--e-cibo)"></span>Cibo</li>
+    <li><span style="--c: var(--e-spostamenti)"></span>Spostamenti</li>
+    <li><span style="--c: var(--e-incontri)"></span>Incontri</li>
+    <li><span style="--c: var(--e-imprevisti)"></span>Imprevisti</li>
+    <li><span style="--c: var(--e-viaggio)"></span>Viaggio</li>
+  </ul>
+</section>
+
+<main class="wrap">
   {% if site.posts.size > 0 %}
+  <h2 class="sezione">Tutti i racconti</h2>
   <ol class="posts">
     {% for post in site.posts %}
     <li class="card">
@@ -26,6 +42,50 @@ layout: default
     {% endfor %}
   </ol>
   {% else %}
-  <p class="vuoto">I primi racconti arrivano presto.</p>
+  <p class="vuoto">I primi racconti arrivano presto: ogni racconto diventerà un pin sulla mappa.</p>
   {% endif %}
 </main>
+
+{% assign con_pin = site.posts | where_exp: "p", "p.lat" %}
+<script>
+  const RACCONTI = [
+    {% for post in con_pin %}{
+      "titolo": {{ post.title | jsonify }},
+      "url": {{ post.url | relative_url | jsonify }},
+      "lat": {{ post.lat }}, "lon": {{ post.lon }},
+      "esperienza": {{ post.esperienza | default: "viaggio" | jsonify }},
+      "data": {{ post.date | date: "%d/%m/%Y" | jsonify }},
+      "luogo": {{ post.luogo | default: "" | jsonify }},
+      "copertina": {% if post.cover and post.cover != '' %}{{ post.cover | relative_url | jsonify }}{% else %}""{% endif %}
+    }{% unless forloop.last %},{% endunless %}{% endfor %}
+  ];
+
+  (function () {
+    if (!window.L) return;
+    const stile = getComputedStyle(document.documentElement);
+    const colore = (e) => stile.getPropertyValue("--e-" + e).trim() || stile.getPropertyValue("--e-viaggio").trim();
+    const testo = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+    const mappa = L.map("mappa-diario", { scrollWheelZoom: false, worldCopyJump: true }).setView([15, 100], 3);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mappa);
+
+    const punti = [];
+    RACCONTI.forEach((r) => {
+      const pin = L.circleMarker([r.lat, r.lon], {
+        radius: 9, weight: 3, color: "#fff", fillColor: colore(r.esperienza), fillOpacity: 1
+      }).addTo(mappa);
+      pin.bindPopup(
+        '<a class="pin" href="' + r.url + '">' +
+        (r.copertina ? '<img src="' + r.copertina + '" alt="">' : "") +
+        '<span class="pin-meta">' + testo(r.data) + (r.luogo ? " · " + testo(r.luogo) : "") + "</span>" +
+        '<strong>' + testo(r.titolo) + "</strong></a>"
+      );
+      punti.push([r.lat, r.lon]);
+    });
+    if (punti.length === 1) mappa.setView(punti[0], 8);
+    else if (punti.length > 1) mappa.fitBounds(punti, { padding: [40, 40], maxZoom: 9 });
+  })();
+</script>

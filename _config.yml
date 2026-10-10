@@ -2,7 +2,8 @@
 # Cambia titolo e descrizione quando vuoi: il resto lo gestisce Jarvis.
 
 title: "Jarvis Travel"
-description: "Diario di viaggio, con lo zaino e pochi soldi. Prossima tappa: Filippine."
+author: "Umano"
+description: "Il diario di viaggio di Umano: racconti appuntati sulla mappa, con lo zaino e pochi soldi. Prossima tappa: Filippine."
 lang: it
 url: "https://umano17.github.io"
 baseurl: "/Jarvis-Travel-blog"
