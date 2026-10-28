@@ -1,12 +1,12 @@
-# Blog di Jarvis Travel – pubblicato con GitHub Pages (Jekyll)
+# Blog di JTravel – pubblicato con GitHub Pages (Jekyll)
 # Cambia titolo e descrizione quando vuoi: il resto lo gestisce Jarvis.
 
-title: "Jarvis Travel"
+title: "JTravel"
 author: "Umano"
 description: "Il diario di viaggio di Umano: racconti appuntati sulla mappa, con lo zaino e pochi soldi. Prossima tappa: Filippine."
 lang: it
 url: "https://umano17.github.io"
-baseurl: "/Jarvis-Travel-blog"
+baseurl: "/JTravel-blog"
 timezone: Europe/Rome
 
 permalink: /:year/:month/:day/:title/
