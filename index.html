@@ -2,17 +2,39 @@
 layout: default
 mappa: true
 ---
-<main class="wrap">
-  <section class="hero">
-    <p class="kicker">Diario di viaggio di {{ site.author }}</p>
-    <h1>{{ site.title }}</h1>
-    <p class="lead">{{ site.description }}</p>
-  </section>
-</main>
+{% comment %} Solo i racconti in italiano: la versione inglese si apre dal pulsante IT/EN dentro il racconto. {% endcomment %}
+{% assign racconti = site.posts | where_exp: "p", "p.lang != 'en'" %}
+{% assign tappe = racconti | group_by: "luogo" %}
 
-<section class="mappa-sezione" id="mappa" aria-label="Mappa dei racconti">
+<section class="copertina" id="mappa" aria-label="Mappa dei racconti">
   <div id="mappa-diario" class="mappa"></div>
-  <ul class="legenda">
+  <p class="mappa-aiuto" hidden>Tocca la mappa per esplorarla</p>
+  <div class="copertina-testo">
+    <div class="wrap">
+      <p class="kicker">Diario di viaggio di {{ site.author }}</p>
+      <h1>{{ site.title }}</h1>
+      {% if racconti.size > 0 %}
+      <p class="conta">{{ racconti.size }} {% if racconti.size == 1 %}racconto{% else %}racconti{% endif %} · {{ tappe.size }} {% if tappe.size == 1 %}tappa{% else %}tappe{% endif %}</p>
+      {% else %}
+      <p class="lead">{{ site.description }}</p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  {% if racconti.size > 0 %}
+  {% assign ultimo = racconti.first %}
+  <a class="ultimo" href="{{ ultimo.url | relative_url }}">
+    {% if ultimo.cover and ultimo.cover != '' %}<img src="{{ ultimo.cover | relative_url }}" alt="" loading="lazy">{% endif %}
+    <div>
+      <p class="meta">Ultimo racconto{% if ultimo.luogo and ultimo.luogo != '' %} · {{ ultimo.luogo | split: ',' | first }}{% endif %}</p>
+      <h2>{{ ultimo.title }}</h2>
+      {% if ultimo.subtitle and ultimo.subtitle != '' %}<p>{{ ultimo.subtitle }}</p>{% endif %}
+    </div>
+  </a>
+
+  <ul class="legenda" aria-label="Colori dei segnaposto">
     <li><span style="--c: var(--e-natura)"></span>Natura</li>
     <li><span style="--c: var(--e-cibo)"></span>Cibo</li>
     <li><span style="--c: var(--e-spostamenti)"></span>Spostamenti</li>
@@ -20,33 +42,35 @@ mappa: true
     <li><span style="--c: var(--e-imprevisti)"></span>Imprevisti</li>
     <li><span style="--c: var(--e-viaggio)"></span>Viaggio</li>
   </ul>
-</section>
 
-<main class="wrap">
-  {% if site.posts.size > 0 %}
-  <h2 class="sezione">Tutti i racconti</h2>
-  <ol class="posts">
-    {% for post in site.posts %}
-    <li class="card">
-      <a href="{{ post.url | relative_url }}">
-        {% if post.cover and post.cover != '' %}
-        <img src="{{ post.cover | relative_url }}" alt="" loading="lazy">
-        {% endif %}
-        <div class="card-text">
-          <p class="meta">{{ post.date | date: '%d/%m/%Y' }}{% if post.luogo and post.luogo != '' %} · {{ post.luogo }}{% endif %}</p>
-          <h2>{{ post.title }}</h2>
-          {% if post.subtitle and post.subtitle != '' %}<p>{{ post.subtitle }}</p>{% endif %}
-        </div>
-      </a>
-    </li>
-    {% endfor %}
-  </ol>
+  {% comment %} Le tappe escono in ordine dalla più recente, perché i racconti arrivano già dal più nuovo. {% endcomment %}
+  {% for tappa in tappe %}
+  <section class="tappa">
+    <header class="tappa-testa">
+      <h2>{% if tappa.name and tappa.name != '' %}{{ tappa.name | split: ',' | first }}{% else %}Altri racconti{% endif %}</h2>
+      <span>{{ tappa.size }} {% if tappa.size == 1 %}racconto{% else %}racconti{% endif %}</span>
+    </header>
+    <ol class="righe">
+      {% for post in tappa.items %}
+      <li>
+        <a href="{{ post.url | relative_url }}">
+          {% if post.cover and post.cover != '' %}<img src="{{ post.cover | relative_url }}" alt="" loading="lazy">{% else %}<span class="segnaposto" aria-hidden="true"></span>{% endif %}
+          <span class="riga-testo">
+            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%d/%m/%Y' }}</time>
+            <strong>{{ post.title }}</strong>
+          </span>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endfor %}
   {% else %}
-  <p class="vuoto">I primi racconti arrivano presto: ogni racconto diventerà un pin sulla mappa.</p>
+  <p class="vuoto">I primi racconti arrivano presto: ogni racconto diventerà un segnaposto sulla mappa.</p>
   {% endif %}
 </main>
 
-{% assign con_pin = site.posts | where_exp: "p", "p.lat" %}
+{% assign con_pin = racconti | where_exp: "p", "p.lat" %}
 <script>
   const RACCONTI = [
     {% for post in con_pin %}{
@@ -66,16 +90,31 @@ mappa: true
     const colore = (e) => stile.getPropertyValue("--e-" + e).trim() || stile.getPropertyValue("--e-viaggio").trim();
     const testo = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-    const mappa = L.map("mappa-diario", { scrollWheelZoom: false, worldCopyJump: true }).setView([15, 100], 3);
+    // La scritta della copertina copre il fondo della mappa: i crediti vanno in alto.
+    const mappa = L.map("mappa-diario", { scrollWheelZoom: false, worldCopyJump: true, attributionControl: false }).setView([12, 122], 5);
+    L.control.attribution({ position: "topright" }).addTo(mappa);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 18,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(mappa);
 
+    // Sul telefono la mappa resta ferma finché non la tocchi: così il dito scorre la pagina.
+    if (L.Browser.mobile) {
+      const aiuto = document.querySelector(".mappa-aiuto");
+      mappa.dragging.disable();
+      mappa.touchZoom.disable();
+      aiuto.hidden = false;
+      mappa.once("click", () => {
+        mappa.dragging.enable();
+        mappa.touchZoom.enable();
+        aiuto.hidden = true;
+      });
+    }
+
     const punti = [];
     RACCONTI.forEach((r) => {
       const pin = L.circleMarker([r.lat, r.lon], {
-        radius: 9, weight: 3, color: "#fff", fillColor: colore(r.esperienza), fillOpacity: 1
+        radius: 9, weight: 3, color: "#fff", fillColor: colore(r.esperienza), fillOpacity: 1, bubblingMouseEvents: false
       }).addTo(mappa);
       pin.bindPopup(
         '<a class="pin" href="' + r.url + '">' +

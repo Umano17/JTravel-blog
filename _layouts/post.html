@@ -1,30 +1,91 @@
 ---
 layout: default
 ---
-<main class="wrap">
-  <article class="post">
+{% assign lingua = page.lang | default: "it" %}
+
+{% comment %} L'altra lingua dello stesso racconto: stesso "ref", lingua diversa. {% endcomment %}
+{% assign altra = nil %}
+{% if page.ref %}
+  {% for p in site.posts %}
+    {% if p.ref == page.ref and p.url != page.url %}{% assign altra = p %}{% endif %}
+  {% endfor %}
+{% endif %}
+
+{% comment %} Precedente e successivo solo tra i racconti della stessa lingua. {% endcomment %}
+{% assign trovato = false %}
+{% assign piu_nuovo = nil %}
+{% assign piu_vecchio = nil %}
+{% for p in site.posts %}
+  {% assign lingua_p = p.lang | default: "it" %}
+  {% if lingua_p == lingua %}
+    {% if p.url == page.url %}{% assign trovato = true %}
+    {% elsif trovato %}{% assign piu_vecchio = p %}{% break %}
+    {% else %}{% assign piu_nuovo = p %}{% endif %}
+  {% endif %}
+{% endfor %}
+
+<article class="post">
+  {% if page.cover and page.cover != '' %}
+  <img class="post-copertina" src="{{ page.cover | relative_url }}" alt="">
+  {% endif %}
+
+  <div class="wrap">
     <header class="post-head">
-      <p class="meta">
-        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%d/%m/%Y' }}</time> · di {{ page.author | default: site.author }}
-        {% if page.luogo and page.luogo != '' %} · {{ page.luogo }}{% endif %}
-      </p>
+      <div class="post-head-riga">
+        <p class="meta">
+          <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%d/%m/%Y' }}</time>
+          {% if page.luogo and page.luogo != '' %} · {{ page.luogo | split: ',' | first }}{% endif %}
+        </p>
+        {% if altra %}
+        <nav class="lingua" aria-label="{% if lingua == 'en' %}Language{% else %}Lingua{% endif %}">
+          {% if lingua == 'en' %}
+          <a href="{{ altra.url | relative_url }}" hreflang="it" lang="it">IT</a><span aria-current="true">EN</span>
+          {% else %}
+          <span aria-current="true">IT</span><a href="{{ altra.url | relative_url }}" hreflang="en" lang="en">EN</a>
+          {% endif %}
+        </nav>
+        {% endif %}
+      </div>
       <h1>{{ page.title }}</h1>
       {% if page.subtitle and page.subtitle != '' %}<p class="subtitle">{{ page.subtitle }}</p>{% endif %}
     </header>
+
     <div class="post-body">
       {{ content }}
     </div>
+
     {% if page.tags.size > 0 %}
     <p class="tags">{% for t in page.tags %}<span>#{{ t }}</span>{% endfor %}</p>
     {% endif %}
-  </article>
 
-  {% if page.lat %}
-  <p class="sulla-mappa"><a href="{{ '/' | relative_url }}#mappa">📍 Vedi sulla mappa</a></p>
-  {% endif %}
+    {% if page.lat %}
+    <a class="dove" href="{{ '/' | relative_url }}#mappa">
+      <span id="mappa-dove" class="dove-mappa" aria-hidden="true"></span>
+      <span>{% if page.luogo and page.luogo != '' %}{{ page.luogo | split: ',' | first }}{% else %}{% if lingua == 'en' %}This story{% else %}Questo racconto{% endif %}{% endif %} {% if lingua == 'en' %}on the map{% else %}sulla mappa{% endif %} →</span>
+    </a>
+    {% endif %}
 
-  <nav class="post-nav">
-    {% if page.previous %}<a href="{{ page.previous.url | relative_url }}">← {{ page.previous.title }}</a>{% else %}<span></span>{% endif %}
-    {% if page.next %}<a href="{{ page.next.url | relative_url }}">{{ page.next.title }} →</a>{% endif %}
-  </nav>
-</main>
+    <nav class="post-nav">
+      {% if piu_vecchio %}<a href="{{ piu_vecchio.url | relative_url }}">← {{ piu_vecchio.title }}</a>{% else %}<span></span>{% endif %}
+      {% if piu_nuovo %}<a href="{{ piu_nuovo.url | relative_url }}">{{ piu_nuovo.title }} →</a>{% endif %}
+    </nav>
+  </div>
+</article>
+
+{% if page.lat %}
+<script>
+  (function () {
+    if (!window.L) return;
+    // Mini mappa ferma, solo per mostrare dove: si tocca per andare alla mappa grande.
+    const punto = [{{ page.lat }}, {{ page.lon }}];
+    const stile = getComputedStyle(document.documentElement);
+    const colore = stile.getPropertyValue("--e-{{ page.esperienza | default: 'viaggio' }}").trim() || stile.getPropertyValue("--e-viaggio").trim();
+    const mappa = L.map("mappa-dove", {
+      center: punto, zoom: 7, zoomControl: false, attributionControl: false,
+      dragging: false, touchZoom: false, scrollWheelZoom: false, doubleClickZoom: false, boxZoom: false, keyboard: false
+    });
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18 }).addTo(mappa);
+    L.circleMarker(punto, { radius: 7, weight: 3, color: "#fff", fillColor: colore, fillOpacity: 1, interactive: false }).addTo(mappa);
+  })();
+</script>
+{% endif %}
