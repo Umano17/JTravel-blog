@@ -1,0 +1,8 @@
+{% comment %}
+  Video YouTube dentro un racconto: {% include video.html id="CODICE" titolo="Il porto al tramonto" %}
+  Usa youtube-nocookie.com, che non salva cookie finché non si preme play.
+{% endcomment %}
+<figure class="video">
+  <iframe src="https://www.youtube-nocookie.com/embed/{{ include.id }}" title="{{ include.titolo | default: 'Video' | escape }}" loading="lazy" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  {% if include.titolo %}<figcaption>{{ include.titolo }}</figcaption>{% endif %}
+</figure>
