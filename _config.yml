@@ -9,6 +9,9 @@ url: "https://umano17.github.io"
 baseurl: "/JTravel-blog"
 timezone: Europe/Rome
 
+# Statistiche (Umami Cloud). Vuoto = statistiche spente. L'ID non è un segreto: è visibile nella pagina.
+umami_id: "95eee8a6-d9de-4789-928e-1c2c6bf4ac4f"
+
 permalink: /:year/:month/:day/:title/
 markdown: kramdown
 kramdown:
