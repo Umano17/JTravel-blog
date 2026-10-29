@@ -1,0 +1,37 @@
+{% comment %}
+  Statistiche con Umami Cloud: niente cookie, niente indirizzi IP salvati.
+  Si accende solo se in _config.yml c'è umami_id, così prove e anteprime non vengono contate.
+{% endcomment %}
+{% if site.umami_id and site.umami_id != '' %}
+<script defer src="https://cloud.umami.is/script.js"
+        data-website-id="{{ site.umami_id }}"
+        data-domains="{{ site.url | remove: 'https://' | remove: 'http://' }}"
+        data-do-not-track="true"></script>
+{% if page.layout == 'post' %}
+<script>
+  (function () {
+    // Fin dove arriva la lettura: un evento la prima volta che si supera il 25, 50, 75 e 100% del racconto.
+    const corpo = document.querySelector('.post-body');
+    if (!corpo) return;
+    const soglie = [25, 50, 75, 100];
+    const mandate = new Set();
+
+    function controlla() {
+      const box = corpo.getBoundingClientRect();
+      const letto = window.innerHeight - box.top;
+      const percento = box.height > 0 ? Math.min(100, (letto / box.height) * 100) : 100;
+      for (const s of soglie) {
+        if (percento >= s && !mandate.has(s) && window.umami) {
+          mandate.add(s);
+          window.umami.track('lettura', { percento: s });
+        }
+      }
+      if (mandate.size === soglie.length) window.removeEventListener('scroll', controlla);
+    }
+
+    window.addEventListener('scroll', controlla, { passive: true });
+    window.addEventListener('load', controlla);
+  })();
+</script>
+{% endif %}
+{% endif %}
