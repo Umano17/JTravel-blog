@@ -13,10 +13,10 @@ mappa: true
     <div class="wrap">
       <p class="kicker">Diario di viaggio di {{ site.author }}</p>
       <h1>{{ site.title }}</h1>
+      {% comment %} La frase si cambia dal pannello di Jarvis (_data/presentazione.yml); senza file vale la descrizione di _config.yml. {% endcomment %}
+      <p class="lead">{{ site.data.presentazione.frase | default: site.description }}</p>
       {% if racconti.size > 0 %}
       <p class="conta">{{ racconti.size }} {% if racconti.size == 1 %}racconto{% else %}racconti{% endif %} · {{ tappe.size }} {% if tappe.size == 1 %}tappa{% else %}tappe{% endif %}</p>
-      {% else %}
-      <p class="lead">{{ site.description }}</p>
       {% endif %}
     </div>
   </div>

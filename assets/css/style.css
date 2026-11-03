@@ -69,7 +69,7 @@ a { color: var(--mare); text-underline-offset: 3px; }
 }
 .copertina-testo h1 { font: 700 clamp(2.4rem, 9vw, 3.8rem)/1 var(--titoli); letter-spacing: -.02em; margin: 0 0 .4rem; }
 .conta { font: 500 .9rem var(--ui); color: var(--inchiostro-2); margin: 0; }
-.lead { font-size: 1.1rem; color: var(--inchiostro-2); margin: 0; max-width: 34ch; }
+.lead { font-size: 1.1rem; color: var(--inchiostro-2); margin: 0 0 .4rem; max-width: 34ch; }
 .mappa-aiuto {
   position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 2; margin: 0;
   padding: .35rem .8rem; border-radius: 999px; background: var(--inchiostro); color: var(--carta);
